@@ -20,4 +20,5 @@ def clean_fund(filename, filepath, year):
     df = df[df['year'] == year]
     df = df.to_csv(filepath, index=False)
 
-
+# def merger(fec, fund, filepath):
+#     continue
