@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 
 def clean_fec(filename, filepath):
     cols = [
@@ -12,7 +13,7 @@ def clean_fec(filename, filepath):
         "OTHER_POL_CMTE_CONTRIB", "POL_PTY_CONTRIB", "CVG_END_DT",
         "INDIV_REFUNDS", "CMTE_REFUNDS",
     ]
-    df = pd.read_csv(filename, sep="|", header=None, names=cols, encoding="latin-1")
+    df = standardize_name_fec(pd.read_csv(filename, sep="|", names=cols, encoding="latin-1"))
     df = df.to_csv(filepath, index=False)
 
 def clean_fund(filename, filepath, year):
@@ -20,5 +21,18 @@ def clean_fund(filename, filepath, year):
     df = df[df['year'] == year]
     df = df.to_csv(filepath, index=False)
 
+#need a function to standardize the names
+def standardize_name_fec(df):
+    for i in range(len(df)):
+        name = df.loc[i, 'CAND_NAME'].split(", ")
+        df.loc[i, 'CAND_NAME'] = name[1] + " " + name[0]
+    return df
+
+# def standardize_name_fund(name, file, col_name):
+
+#     return df
+
 # def merger(fec, fund, filepath):
 #     continue
+# probably will have to center merge, because there are a lot of libertarians and other parties in the MEDSL data
+

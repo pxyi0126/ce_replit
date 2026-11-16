@@ -1,6 +1,6 @@
-import numpy as py
+import numpy as np
 import pandas as pd
-from utils import clean_fec, clean_fund
+from utils import *
 import re
 
 #for 1998
