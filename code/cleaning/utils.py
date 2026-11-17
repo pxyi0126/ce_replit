@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import os
 
 def clean_fec(filename, filepath):
     cols = [
@@ -13,7 +14,7 @@ def clean_fec(filename, filepath):
         "OTHER_POL_CMTE_CONTRIB", "POL_PTY_CONTRIB", "CVG_END_DT",
         "INDIV_REFUNDS", "CMTE_REFUNDS",
     ]
-    df = standardize_name_fec(pd.read_csv(filename, sep="|", names=cols, encoding="latin-1"))
+    df = pd.read_csv(filename, sep="|", names=cols, encoding="latin-1")
     df = df.to_csv(filepath, index=False)
 
 def clean_fund(filename, filepath, year):
@@ -22,15 +23,25 @@ def clean_fund(filename, filepath, year):
     df = df.to_csv(filepath, index=False)
 
 #need a function to standardize the names
-def standardize_name_fec(df):
+def stand_fec(csv_file):
+    df = pd.read_csv(csv_file)
     for i in range(len(df)):
-        name = df.loc[i, 'CAND_NAME'].split(", ")
-        df.loc[i, 'CAND_NAME'] = name[1] + " " + name[0]
-    return df
+        name = str(df.loc[i, 'CAND_NAME']).strip().split(", ")
+        if len(name) >= 2:
+            df.loc[i, 'CAND_NAME'] = name[1] + " " + name[0]
+        else:
+            df.loc[i, 'CAND_NAME'] = " ".join(name)
+    df = df.to_csv(csv_file, index=False)
 
-# def standardize_name_fund(name, file, col_name):
-
-#     return df
+def stand_fund(csv_file):
+    df = pd.read_csv(csv_file)
+    for i in range(len(df)):
+        if '\"' in df.loc[i, 'candidate']:
+            name = re.sub(r'\\', '', df.loc[i, 'candidate'])
+        else:
+            name = df.loc[i, 'candidate']
+        df.loc[i, 'candidate'] = name
+    df = df.to_csv(csv_file, index=False)
 
 # def merger(fec, fund, filepath):
 #     continue
